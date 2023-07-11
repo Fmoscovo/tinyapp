@@ -20,14 +20,14 @@
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
         </p>
 
-        <!-- New form -->
+        <!-- Updated form -->
         <form method="POST" action="/urls/<%= id %>/update">
           <div class="form-group">
-            <label for="longURLInput">Updated Long URL:</label>
+            <label for="updatedLongURLInput">Updated Long URL:</label>
             <input
               type="text"
               class="form-control"
-              id="longURLInput"
+              id="updatedLongURLInput"
               name="updatedLongURL"
               value="<%= longURL %>"
             />

@@ -80,6 +80,20 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
+app.post("/urls/:id/update", (req, res) => {
+  const id = req.params.id;
+  const updatedLongURL = req.body.updatedLongURL;
+  urlDatabase[id] = updatedLongURL;
+  res.redirect("/urls");
+});
+
+app.post("/urls/:id", (req, res) => {
+  const id = req.params.id; // Get the URL resource ID from the request parameters
+  const updatedLongURL = req.body.updatedLongURL; // Get the updated long URL from the request body
+  urlDatabase[id] = updatedLongURL; // Update the URL in the database
+  res.redirect("/urls"); // Redirect the client back to the urls_index page
+});
+
 app.post("/urls/:id/delete", (req, res) => {
   const id = req.params.id; // Remove the URL resource with the specified ID
   delete urlDatabase[id]; // Redirect the client back to the urls_index page
