@@ -54,6 +54,16 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+app.get("/u/:id", (req, res) => {
+  const shortURL = req.params.id; // Get the short URL ID from the request parameters
+  const longURL = urlDatabase[shortURL]; // Retrieve the corresponding longURL from the database
+
+  if (longURL) {
+    res.redirect(longURL); // Redirect to the longURL
+  } else {
+    res.status(404).send("URL not found"); // Handle the case when the shortURL does not exist
+  }
+});
 // GET request to display the details of a specific URL
 app.get("/urls/:id", (req, res) => {
   const templateVars = {
@@ -65,10 +75,15 @@ app.get("/urls/:id", (req, res) => {
 
 // POST request adding a new URL to the database
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  const shortURL = generateRandomString();
+  urlDatabase[shortURL] = req.body.longURL;
+  res.redirect(`/urls/${shortURL}`);
 });
+// app.post("/urls", (req, res) => {
+//   console.log(req.body); // Log the POST request body to the console
+//   res.send("Ok"); // Respond with 'Ok' (we will replace this)
+// });
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`TinyApp is working on port ${PORT}!`);
 });
