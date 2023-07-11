@@ -28,11 +28,15 @@
           </tr>
         </thead>
         <tbody>
-          <% for (let id in urls) { %>
-          <tr>
-            <td><%= id %></td>
-            <td><%= urls[id] %></td>
-          </tr>
+          <% for (let url of urls) { %>
+          <div class="url">
+            <p><strong>Original URL:</strong> <%= url.originalUrl %></p>
+            <p><strong>Shortened URL:</strong> <%= url.shortenedUrl %></p>
+
+            <form method="POST" action="/urls/<%= url.id %>/delete">
+              <button type="submit">Delete</button>
+            </form>
+          </div>
           <% } %>
         </tbody>
       </table>
