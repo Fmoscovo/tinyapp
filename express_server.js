@@ -79,10 +79,12 @@ app.post("/urls", (req, res) => {
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
 });
-// app.post("/urls", (req, res) => {
-//   console.log(req.body); // Log the POST request body to the console
-//   res.send("Ok"); // Respond with 'Ok' (we will replace this)
-// });
+
+app.post("/urls/:id/delete", (req, res) => {
+  const id = req.params.id; // Remove the URL resource with the specified ID
+  delete urlDatabase[id]; // Redirect the client back to the urls_index page
+  res.redirect("/urls");
+});
 
 app.listen(PORT, () => {
   console.log(`TinyApp is working on port ${PORT}!`);
