@@ -56,7 +56,10 @@ app.get("/hello", (req, res) => {
 
 // GET request to render the URL submission form
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = {
+    username: req.cookies.username, // Access username from cookies
+  };
+  res.render("urls_new", templateVars);
 });
 
 app.get("/u/:id", (req, res) => {
@@ -74,6 +77,7 @@ app.get("/urls/:id", (req, res) => {
   const templateVars = {
     id: req.params.id,
     longURL: urlDatabase[req.params.id],
+    username: req.cookies.username, // Access username from cookies
   };
   res.render("urls_show", templateVars);
 });
