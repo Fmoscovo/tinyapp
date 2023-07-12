@@ -84,6 +84,11 @@ app.post("/login", (req, res) => {
   res.cookie("username", username);
   res.redirect("/urls");
 });
+// POST request to clear the username cookie and redirect back to the /urls page
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
+  res.redirect("/urls");
+});
 
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
