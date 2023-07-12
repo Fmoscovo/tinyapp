@@ -30,6 +30,18 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com",
 };
 
+const users = {
+  id1: {
+    id: "id1",
+    email: "1@1.com",
+    password: "test1",
+  },
+  id2: {
+    id: "id2",
+    email: "2@2.com",
+    password: "test2",
+  },
+};
 // GET request for the homepage
 app.get("/", (req, res) => {
   res.send("Hello! Welcome to the TinyApp!");
