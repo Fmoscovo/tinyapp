@@ -54,6 +54,14 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+// GET request to render the registration page
+app.get("/register", (req, res) => {
+  const templateVars = {
+    username: req.cookies.username, // Access username from cookies
+  };
+  res.render("register", templateVars);
+});
+
 // GET request to render the URL submission form
 app.get("/urls/new", (req, res) => {
   const templateVars = {
@@ -79,7 +87,7 @@ app.get("/urls/:id", (req, res) => {
     longURL: urlDatabase[req.params.id],
     username: req.cookies.username, // Access username from cookies
   };
-  res.render("urls_show", templateVars);
+  res.render("urls_show", templateVars); //// ->  correct before submittion ////
 });
 
 // POST request adding a new URL to the database
