@@ -50,7 +50,7 @@ app.get("/", (req, res) => {
 // GET request to display the list of URLs
 app.get("/urls", (req, res) => {
   const templateVars = {
-    username: req.cookies.username, // Access username from cookies
+    user: users[req.cookies.user_id],
     urls: urlDatabase,
   };
   res.render("urls_index", templateVars);
@@ -69,7 +69,7 @@ app.get("/hello", (req, res) => {
 // GET request to render the registration page
 app.get("/register", (req, res) => {
   const templateVars = {
-    username: req.cookies.username, // Access username from cookies
+    user: users[req.cookies.user_id],
   };
   res.render("register", templateVars);
 });
@@ -77,7 +77,7 @@ app.get("/register", (req, res) => {
 // GET request to render the URL submission form
 app.get("/urls/new", (req, res) => {
   const templateVars = {
-    username: req.cookies.username, // Access username from cookies
+    user: users[req.cookies.user_id],
   };
   res.render("urls_new", templateVars);
 });
@@ -97,20 +97,20 @@ app.get("/urls/:id", (req, res) => {
   const templateVars = {
     id: req.params.id,
     longURL: urlDatabase[req.params.id],
-    username: req.cookies.username, // Access username from cookies
+    user: users[req.cookies.user_id],
   };
-  res.render("urls_show", templateVars); //// ->  correct before submittion ////
+  res.render("urls_show", templateVars);
 });
 
 // POST request adding a new URL to the database
 app.post("/login", (req, res) => {
   const { username } = req.body;
-  res.cookie("username", username);
+  res.cookie("user_id", username);
   res.redirect("/urls");
 });
 // POST request to clear the username cookie and redirect back to the /urls page
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
