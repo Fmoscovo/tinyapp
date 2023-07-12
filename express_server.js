@@ -1,10 +1,12 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
 const app = express();
 const PORT = 8080; // default port 8080
 
-app.set("view engine", "ejs");
 //   middleware
+app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // function to generate a random string of 6 characters
 function generateRandomString() {
@@ -35,7 +37,10 @@ app.get("/", (req, res) => {
 
 // GET request to display the list of URLs
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = {
+    username: req.cookies.username, // Access username from cookies
+    urls: urlDatabase,
+  };
   res.render("urls_index", templateVars);
 });
 
