@@ -23,6 +23,16 @@ function generateRandomString() {
   return result;
 }
 
+const getUserByEmail = function (email) {
+  for (const userId in users) {
+    const user = users[userId];
+    if (user.email === email) {
+      return user;
+    }
+  }
+  return null;
+};
+
 ////////////routes////////////
 const urlDatabase = {
   // database of URLs
@@ -42,6 +52,7 @@ const users = {
     password: "test2",
   },
 };
+
 // GET request for the homepage
 app.get("/", (req, res) => {
   res.send("Hello! Welcome to the TinyApp!Have Fun!");
@@ -115,11 +126,26 @@ app.post("/logout", (req, res) => {
 });
 
 //POST request to register a new user
+//If the e-mail or password are empty strings, send back a response with the 400 status code.
+// If someone tries to register with an email that is already in the users object, send back a response with the 400 status code.
+
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
   const id = generateRandomString();
-  const newUser = { id, email, password };
-  users[id] = newUser;
+  const newRegisterUser = { id, email, password };
+
+  if (!email || !password) {
+    res.status(400).send("Please enter a valid email and a valid password.");
+    return;
+  }
+
+  const userInData = getUserByEmail(email);
+  if (userInData) {
+    res.status(400).send("Registration failed. Try another email.");
+    return;
+  }
+
+  users[id] = newRegisterUser;
   res.cookie("user_id", id);
   res.redirect("/urls");
 });
