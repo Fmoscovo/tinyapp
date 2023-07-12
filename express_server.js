@@ -44,7 +44,7 @@ const users = {
 };
 // GET request for the homepage
 app.get("/", (req, res) => {
-  res.send("Hello! Welcome to the TinyApp!");
+  res.send("Hello! Welcome to the TinyApp!Have Fun!");
 });
 
 // GET request to display the list of URLs
@@ -111,6 +111,16 @@ app.post("/login", (req, res) => {
 // POST request to clear the username cookie and redirect back to the /urls page
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
+  res.redirect("/urls");
+});
+
+//POST request to register a new user
+app.post("/register", (req, res) => {
+  const { email, password } = req.body;
+  const id = generateRandomString();
+  const newUser = { id, email, password };
+  users[id] = newUser;
+  res.cookie("user_id", id);
   res.redirect("/urls");
 });
 
