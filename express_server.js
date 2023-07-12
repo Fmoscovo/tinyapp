@@ -74,6 +74,12 @@ app.get("/urls/:id", (req, res) => {
 });
 
 // POST request adding a new URL to the database
+app.post("/login", (req, res) => {
+  const { username } = req.body;
+  res.cookie("username", username);
+  res.redirect("/urls");
+});
+
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
