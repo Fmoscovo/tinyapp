@@ -21,19 +21,35 @@
         </p>
 
         <!-- Updated form -->
-        <form method="POST" action="/urls/<%= id %>/update">
-          <div class="form-group">
-            <label for="updatedLongURLInput">Updated Long URL:</label>
-            <input
-              type="text"
-              class="form-control"
-              id="updatedLongURLInput"
-              name="updatedLongURL"
-              value="<%= longURL %>"
-            />
+        <div class="text-center">
+          <h4>Edit</h4>
+          <div class="d-flex justify-content-center">
+            <div class="mr-3">
+              <h5>New URL:</h5>
+            </div>
+            <form
+              class="form-inline"
+              method="POST"
+              action="/urls/<%= id %>/update"
+            >
+              <div class="form-group mb-2">
+                <label for="updatedLongURLInput" class="sr-only"
+                  >Updated Long URL:</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="updatedLongURLInput"
+                  name="updatedLongURL"
+                  value="<%= longURL %>"
+                />
+              </div>
+              <button type="submit" class="btn btn-outline-info mb-2">
+                Update
+              </button>
+            </form>
           </div>
-          <button type="submit" class="btn btn-outline-info">Update</button>
-        </form>
+        </div>
       </div>
       <div class="card-footer text-muted"></div>
     </div>
