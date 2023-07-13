@@ -31,8 +31,11 @@
         <tbody>
           <% for (let id in urls) { %>
           <tr>
-            <td><%= id %></td>
-            <td><%= urls[id] %></td>
+            <td>
+              <a href="/u/<%= id %>"><%= id %></a>
+              <!-- Make the ID clickable -->
+            </td>
+            <td><%= urls[id].longURL %></td>
             <td>
               <a href="/urls/<%= id %>">
                 <button type="button" class="btn btn-outline-primary">
