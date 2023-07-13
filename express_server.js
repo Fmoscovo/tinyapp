@@ -10,7 +10,15 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// function to generate a random string of 6 characters
+const requiredLogin = function (req, res, next) {
+  const user = users[req.cookies.user_id];
+  if (!user) {
+    res.redirect("/login");
+    return;
+  }
+  next();
+};
+
 function generateRandomString() {
   let result = "";
   const characters =
@@ -61,7 +69,7 @@ app.get("/", (req, res) => {
 });
 
 // GET request to display the list of URLs
-app.get("/urls", (req, res) => {
+app.get("/urls", requiredLogin, (req, res) => {
   const templateVars = {
     user: users[req.cookies.user_id],
     urls: urlDatabase,
