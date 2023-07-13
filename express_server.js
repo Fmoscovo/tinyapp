@@ -133,16 +133,10 @@ app.post("/login", (req, res) => {
   }
 });
 
-// app.post("/login", (req, res) => {
-//   const { username } = req.body;
-//   res.cookie("user_id", username);
-//   res.redirect("/urls");
-// });
-
-// app.post("/logout", (req, res) => {
-//   res.clearCookie("user_id");
-//   res.redirect("/urls");
-// });
+app.post("/logout", (req, res) => {
+  res.clearCookie("user_id"); // Clear the user_id cookie
+  res.redirect("/urls");
+});
 
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
