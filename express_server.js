@@ -153,12 +153,19 @@ app.get("/u/:id", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = {
-    id: req.params.id,
-    longURL: urlDatabase[req.params.id].longURL, // Add this line
-    user: users[req.cookies.user_id],
-  };
-  res.render("urls_show", templateVars);
+  const shortURL = req.params.id;
+  const url = urlDatabase[shortURL];
+
+  if (url && url.longURL) {
+    const templateVars = {
+      id: shortURL,
+      longURL: url.longURL,
+      user: users[req.cookies.user_id],
+    };
+    res.render("urls_show", templateVars);
+  } else {
+    res.status(404).send("URL not found");
+  }
 });
 
 app.post("/login", (req, res) => {
@@ -196,7 +203,7 @@ app.post("/register", (req, res) => {
   res.redirect("/urls");
 });
 
-app.post("/urls", (req, res) => {
+app.post("/urls", requiredLogin, (req, res) => {
   const userId = req.cookies.user_id;
 
   if (!userId || !users[userId]) {
@@ -215,11 +222,12 @@ app.post("/urls/:id/update", (req, res) => {
   const shortURL = req.params.id;
   const updatedLongURL = req.body.updatedLongURL;
 
-  if (urlDatabase[shortURL].userID === userId) {
+  if (urlDatabase[shortURL] && urlDatabase[shortURL].userID === userId) {
     urlDatabase[shortURL].longURL = updatedLongURL;
+    res.redirect("/urls");
+  } else {
+    res.status(403).send("Unauthorized access or URL not found.");
   }
-
-  res.redirect("/urls");
 });
 
 app.post("/urls/:id", (req, res) => {
