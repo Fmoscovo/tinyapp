@@ -203,17 +203,16 @@ app.post("/register", (req, res) => {
   res.redirect("/urls");
 });
 
-app.post("/urls", requiredLogin, (req, res) => {
-  const userId = req.cookies.user_id;
+app.post("/urls", (req, res) => {
+  const user = users[req.cookies.user_id];
 
-  if (!userId || !users[userId]) {
+  if (!user) {
     res.status(401).send("You must be logged in to create a short URL.");
     return;
   }
 
   const shortURL = generateRandomString();
-  const longURL = req.body.longURL;
-  urlDatabase[shortURL] = { longURL, userID: userId };
+  urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
 });
 
