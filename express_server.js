@@ -10,11 +10,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 const requiredLogin = function (req, res, next) {
-  const user = users[req.cookies.user_id];
-  if (!user) {
+  const userId = req.cookies.user_id;
+
+  if (!userId || !users[userId]) {
     res.redirect("/login");
     return;
   }
+
   next();
 };
 
@@ -105,7 +107,7 @@ app.get("/register", (req, res) => {
   res.render("register", templateVars);
 });
 
-app.get("/urls/new", (req, res) => {
+app.get("/urls/new", requiredLogin, (req, res) => {
   const templateVars = {
     user: users[req.cookies.user_id],
   };
@@ -171,6 +173,13 @@ app.post("/register", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
+  const user = users[req.cookies.user_id];
+
+  if (!user) {
+    res.status(401).send("You must be logged in to create a short URL.");
+    return;
+  }
+
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
