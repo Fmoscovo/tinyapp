@@ -3,9 +3,8 @@ const cookieParser = require("cookie-parser");
 const { get } = require("request");
 const e = require("express");
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 8080;
 
-//   middleware
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -45,7 +44,6 @@ const getUserByEmail = function (email) {
 
 ////////////routes////////////
 const urlDatabase = {
-  // database of URLs
   b2xVn2: "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
 };
@@ -63,12 +61,10 @@ const users = {
   },
 };
 
-// GET request for the homepage
 app.get("/", (req, res) => {
   res.send("Hello! Welcome to the TinyApp!Have Fun!");
 });
 
-// GET request to display the list of URLs
 app.get("/urls", requiredLogin, (req, res) => {
   const templateVars = {
     user: users[req.cookies.user_id],
@@ -77,31 +73,38 @@ app.get("/urls", requiredLogin, (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-// GET request to retrieve URL database in JSON format
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-// GET request to display a simple "Hello World" page in HTML
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
-//GET request for the login page
+
 app.get("/login", (req, res) => {
+  const user = users[req.cookies.user_id];
+  if (user) {
+    res.redirect("/urls");
+    return;
+  }
   const templateVars = {
-    user: users[req.cookies.user_id],
+    user,
   };
   res.render("login", templateVars);
 });
-// GET request to render the registration page
+
 app.get("/register", (req, res) => {
+  const user = users[req.cookies.user_id];
+  if (user) {
+    res.redirect("/urls");
+    return;
+  }
   const templateVars = {
-    user: users[req.cookies.user_id],
+    user,
   };
   res.render("register", templateVars);
 });
 
-// GET request to render the URL submission form
 app.get("/urls/new", (req, res) => {
   const templateVars = {
     user: users[req.cookies.user_id],
@@ -110,16 +113,16 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/u/:id", (req, res) => {
-  const shortURL = req.params.id; // Get the short URL ID from the request parameters
-  const longURL = urlDatabase[shortURL]; // Retrieve the corresponding longURL from the database
+  const shortURL = req.params.id;
+  const longURL = urlDatabase[shortURL];
 
   if (longURL) {
-    res.redirect(longURL); // Redirect to the longURL
+    res.redirect(longURL);
   } else {
-    res.status(404).send("URL not found"); // Handle the case when the shortURL does not exist
+    res.status(404).send("URL not found");
   }
 });
-// GET request to display the details of a specific URL
+
 app.get("/urls/:id", (req, res) => {
   const templateVars = {
     id: req.params.id,
@@ -142,7 +145,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id"); // Clear the user_id cookie
+  res.clearCookie("user_id");
   res.redirect("/login");
 });
 
@@ -181,15 +184,15 @@ app.post("/urls/:id/update", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
-  const id = req.params.id; // Get the URL resource ID from the request parameters
-  const updatedLongURL = req.body.updatedLongURL; // Get the updated long URL from the request body
-  urlDatabase[id] = updatedLongURL; // Update the URL in the database
-  res.redirect("/urls"); // Redirect the client back to the urls_index page
+  const id = req.params.id;
+  const updatedLongURL = req.body.updatedLongURL;
+  urlDatabase[id] = updatedLongURL;
+  res.redirect("/urls");
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-  const id = req.params.id; // Remove the URL resource with the specified ID
-  delete urlDatabase[id]; // Redirect the client back to the urls_index page
+  const id = req.params.id;
+  delete urlDatabase[id];
   res.redirect("/urls");
 });
 
