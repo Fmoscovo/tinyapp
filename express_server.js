@@ -1,6 +1,7 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const app = express();
+const bcrypt = require("bcryptjs");
 const PORT = 8080;
 ///////////////////////////middleware/////////////////////////////////////
 app.set("view engine", "ejs");
@@ -17,6 +18,7 @@ const requiredLogin = function (req, res, next) {
 
   next();
 };
+
 function generateRandomString() {
   let result = "";
   const characters =
@@ -176,11 +178,29 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 //////////////////////////POST ////////////////////////////////////////////////
+// app.post("/login", (req, res) => {
+//   const { email, password } = req.body;
+//   const user = getUserByEmail(email);
+
+//   if (user && user.password === password) {
+//     res.cookie("user_id", user.id);
+//     res.redirect("/urls");
+//   } else {
+//     res.status(403).send("Login failed. Please try again.");
+//   }
+// });
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   const user = getUserByEmail(email);
 
-  if (user && user.password === password) {
+  console.log("Entered password:", password);
+  console.log("Stored hashed password:", user.hashedPassword);
+
+  if (
+    user &&
+    user.hashedPassword &&
+    bcrypt.compareSync(password, user.hashedPassword)
+  ) {
     res.cookie("user_id", user.id);
     res.redirect("/urls");
   } else {
@@ -188,30 +208,29 @@ app.post("/login", (req, res) => {
   }
 });
 
-app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
-  res.redirect("/login");
-});
-
 app.post("/register", (req, res) => {
-  const { email, password } = req.body;
+  const newUser = req.body;
+  const newUserId = generateRandomString();
 
-  if (!email || !password) {
-    res.status(400).send("Email and password are required.");
+  const hashedPassword = bcrypt.hashSync(req.body.password, 10);
+  if (!newUser.password) {
+    res.status(400).send("Password is required.");
     return;
   }
-
-  const existingUser = getUserByEmail(email);
-
-  if (existingUser) {
+  if (!newUser.email) {
+    res.status(400).send("Email is required.");
+    return;
+  }
+  if (getUserByEmail(newUser.email)) {
     res.status(400).send("Email is already registered.");
     return;
   }
-
-  const id = generateRandomString();
-  const newUser = { id, email, password };
-  users[id] = newUser;
-  res.cookie("user_id", id);
+  users[newUserId] = {
+    id: newUserId,
+    email: newUser.email,
+    hashedPassword: hashedPassword, // Use 'hashedPassword' instead of 'password'
+  };
+  res.cookie("user_id", newUserId);
   res.redirect("/urls");
 });
 
@@ -227,6 +246,11 @@ app.post("/urls", requiredLogin, (req, res) => {
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = { longURL, userID: userId };
   res.redirect(`/urls/${shortURL}`);
+});
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("user_id");
+  res.redirect("/login");
 });
 
 app.post("/urls/:id/update", (req, res) => {

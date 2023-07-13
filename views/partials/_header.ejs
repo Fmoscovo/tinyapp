@@ -1,10 +1,16 @@
 <header>
   <nav class="navbar navbar-expand-md navbar-dark bg-success">
-    <a class="navbar-brand" href="/urls">TinyApp</a>
+    <a
+      class="navbar-brand"
+      href="<% if (user && user.email) { %>/urls<% } else { %>/login<% } %>"
+      >TinyApp</a
+    >
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav mr-auto">
+        <% if (user && user.email) { %>
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+        <% } %>
       </div>
       <div class="navbar-nav ml-auto">
         <% if (user && user.email) { %>
