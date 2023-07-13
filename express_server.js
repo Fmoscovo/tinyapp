@@ -1,7 +1,6 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const { get } = require("request");
-const e = require("express");
 const app = express();
 const PORT = 8080;
 
@@ -181,21 +180,18 @@ app.post("/logout", (req, res) => {
 
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
-  const id = generateRandomString();
-  const newRegisterUser = { id, email, password };
-
   if (!email || !password) {
-    res.status(400).send("Please enter a valid email and a valid password.");
+    res.status(400).send("Email and password are required.");
     return;
   }
-
-  const userInData = getUserByEmail(email);
-  if (userInData) {
-    res.status(400).send("Registration failed. Try another email.");
+  const existingUser = getUserByEmail(email);
+  if (existingUser) {
+    res.status(400).send("Email is already registered.");
     return;
   }
-
-  users[id] = newRegisterUser;
+  const id = generateRandomString();
+  const newUser = { id, email, password };
+  users[id] = newUser;
   res.cookie("user_id", id);
   res.redirect("/urls");
 });
