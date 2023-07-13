@@ -204,15 +204,26 @@ app.post("/register", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  const user = users[req.cookies.user_id];
+  const userId = req.cookies.user_id;
+  const user = users[userId];
 
   if (!user) {
     res.status(401).send("You must be logged in to create a short URL.");
     return;
   }
 
+  const longURL = req.body.longURL;
+  const existingURL = Object.values(urlDatabase).find(
+    (url) => url.longURL === longURL && url.userID === userId
+  );
+
+  if (existingURL) {
+    res.status(400).send("Short URL already exists for this long URL.");
+    return;
+  }
+
   const shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
+  urlDatabase[shortURL] = { longURL: longURL, userID: userId };
   res.redirect(`/urls/${shortURL}`);
 });
 
