@@ -121,21 +121,28 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-// POST request adding a new URL to the database
 app.post("/login", (req, res) => {
-  const { username } = req.body;
-  res.cookie("user_id", username);
-  res.redirect("/urls");
-});
-// POST request to clear the username cookie and redirect back to the /urls page
-app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
-  res.redirect("/urls");
+  const { email, password } = req.body;
+  const user = getUserByEmail(email);
+
+  if (user && user.password === password) {
+    res.cookie("user_id", user.id);
+    res.redirect("/urls");
+  } else {
+    res.status(403).send("Login failed. Please try again.");
+  }
 });
 
-//POST request to register a new user
-//If the e-mail or password are empty strings, send back a response with the 400 status code.
-// If someone tries to register with an email that is already in the users object, send back a response with the 400 status code.
+// app.post("/login", (req, res) => {
+//   const { username } = req.body;
+//   res.cookie("user_id", username);
+//   res.redirect("/urls");
+// });
+
+// app.post("/logout", (req, res) => {
+//   res.clearCookie("user_id");
+//   res.redirect("/urls");
+// });
 
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
