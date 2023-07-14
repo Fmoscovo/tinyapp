@@ -21,7 +21,7 @@ Follow these steps to run TinyApp on your local machine.
 
 ## Step 1: Clone the Repository
 Clone the TinyApp repository from GitHub by running the following command in your terminal:
-git clone <https://github.com/Fmoscovo/tinyapp.git>
+git clone <https://github.com/Fmoscovo/tinyapp.git>.
 ## Step 2: Navigate to the Directory
 Change your current directory to the TinyApp directory: cd TinyApp
 ## Step 3: Install Dependencies (Inputs above)
