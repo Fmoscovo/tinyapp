@@ -4,6 +4,8 @@ const app = express();
 const bcrypt = require("bcryptjs");
 const PORT = 8080;
 
+const helpers = require("./helpers");
+
 ///////////////////////////middleware/////////////////////////////////////
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
@@ -41,16 +43,6 @@ function generateRandomString() {
   }
 
   return result;
-}
-
-function getUserByEmail(email, database) {
-  for (const userId in database) {
-    const user = database[userId];
-    if (user.email === email) {
-      return user;
-    }
-  }
-  return null;
 }
 
 function urlsForUser(id) {
@@ -193,7 +185,7 @@ app.get("/urls/:id", (req, res) => {
 //////////////////////////POST ////////////////////////////////////////////////
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  const user = getUserByEmail(email, users);
+  const user = helpers.getUserByEmail(email, users);
 
   console.log("Entered password:", password);
   console.log("Stored hashed password:", user.hashedPassword);
@@ -223,7 +215,7 @@ app.post("/register", (req, res) => {
     res.status(400).send("Email is required.");
     return;
   }
-  if (getUserByEmail(newUser.email, users)) {
+  if (helpers.getUserByEmail(newUser.email, users)) {
     res.status(400).send("Email is already registered.");
     return;
   }
