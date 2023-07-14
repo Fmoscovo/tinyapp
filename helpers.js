@@ -1,3 +1,4 @@
+//-> function to check if email exists in database
 function getUserByEmail(email, database) {
   for (const userId in database) {
     const user = database[userId];

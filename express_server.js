@@ -6,7 +6,7 @@ const PORT = 8080;
 
 const helpers = require("./helpers");
 
-///////////////////////////middleware/////////////////////////////////////
+///////////////////////////MIDDLEWARE/////////////////////////////////////
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(
@@ -17,7 +17,8 @@ app.use(
   })
 );
 
-//////////////////////////////////////functions/////////////////////
+//////////////////////////////////FUNCTIONS///////////////////////////////
+//-> check if a user is logged in by verifying the existence of a user_id.
 const requiredLogin = function (req, res, next) {
   const userId = req.session.user_id;
 
@@ -28,7 +29,7 @@ const requiredLogin = function (req, res, next) {
 
   next();
 };
-
+//=>generate a random string of 6 alphanumeric characters.
 function generateRandomString() {
   let result = "";
   const characters =
@@ -42,7 +43,7 @@ function generateRandomString() {
 
   return result;
 }
-
+//->return an object containing only the URLs where the userID is equal to the id of the currently logged-in user.
 function urlsForUser(id) {
   const userUrls = {};
 
@@ -56,6 +57,7 @@ function urlsForUser(id) {
 }
 
 ///////////////////////////////database//////////////////////////////
+//->server-side implementation of a URL shortening service.
 const urlDatabase = {
   b6UTxQ: {
     longURL: "https://www.tsn.ca",
@@ -66,7 +68,7 @@ const urlDatabase = {
     userID: "aJ48lW",
   },
 };
-
+// -> server-side implementation of a user registration service.
 const users = {
   aJ48lW: {
     id: "aJ48lW",
@@ -81,6 +83,7 @@ const users = {
 };
 
 //////////////////////////// GET /////////////////////////////////////////////
+//->redirect the user to either the "/urls" page if they are logged in or to the "/login" page if they are not logged in.
 app.get("/", (req, res) => {
   const userId = req.session.user_id;
 
@@ -90,7 +93,7 @@ app.get("/", (req, res) => {
     res.redirect("/login");
   }
 });
-
+//->render the "urls_index" template with the URLs associated with the currently logged-in user.
 app.get("/urls", (req, res) => {
   const userId = req.session.user_id;
 
@@ -108,11 +111,11 @@ app.get("/urls", (req, res) => {
 
   res.render("urls_index", templateVars);
 });
-
+//-> send a JSON response containing the entire urlDatabase object.
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
-
+//-> render the login page for the user to enter their credentials and log in to the application. If the user is already logged in, they will be redirected to the "/urls" page.
 app.get("/login", (req, res) => {
   const user = users[req.session.user_id];
 
@@ -127,7 +130,7 @@ app.get("/login", (req, res) => {
 
   res.render("login", templateVars);
 });
-
+//->render the registration page for a new user and redirect them to the "/urls" page if they are already logged in.
 app.get("/register", (req, res) => {
   const user = users[req.session.user_id];
 
@@ -142,7 +145,7 @@ app.get("/register", (req, res) => {
 
   res.render("register", templateVars);
 });
-
+//=>render the "urls_new" template and display it to the user
 app.get("/urls/new", requiredLogin, (req, res) => {
   const templateVars = {
     user: users[req.session.user_id],
@@ -150,7 +153,7 @@ app.get("/urls/new", requiredLogin, (req, res) => {
 
   res.render("urls_new", templateVars);
 });
-
+//->handle GET requests to the "/u/:id" endpoint, where ":id" is a short URL code.
 app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
   const url = urlDatabase[shortURL];
@@ -161,7 +164,7 @@ app.get("/u/:id", (req, res) => {
     res.status(404).send("URL not found");
   }
 });
-
+//-> render a specific URL page with its corresponding short URL and long URL, only if the user is logged in and has permission to access the URL.
 app.get("/urls/:id", (req, res) => {
   const userId = req.session.user_id;
   const shortURL = req.params.id;
@@ -187,6 +190,7 @@ app.get("/urls/:id", (req, res) => {
 });
 
 //////////////////////////POST ////////////////////////////////////////////////
+//-> handle the login process by receiving the email and password from the request body, retrieving the user with the matching email from the users object, comparing the entered password with the hashed password stored in the user object, and setting the user_id in the session if the login is successful.
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   const user = helpers.getUserByEmail(email, users);
@@ -205,7 +209,7 @@ app.post("/login", (req, res) => {
     res.status(403).send("Login failed. Please try again.");
   }
 });
-
+//->handle the registration of a new user by validating the input data, generating a unique user ID, hashing the password, and adding the new user to the users object. Finally, the function sets the user ID in the session and redirects the user to the /urls page.
 app.post("/register", (req, res) => {
   const newUser = req.body;
   const newUserId = generateRandomString();
@@ -231,7 +235,7 @@ app.post("/register", (req, res) => {
   req.session.user_id = newUserId;
   res.redirect("/urls");
 });
-
+//-> create a new short URL for a given long URL and associate it with the user who created it.
 app.post("/urls", requiredLogin, (req, res) => {
   const userId = req.session.user_id;
 
@@ -245,12 +249,12 @@ app.post("/urls", requiredLogin, (req, res) => {
   urlDatabase[shortURL] = { longURL, userID: userId };
   res.redirect(`/urls/${shortURL}`);
 });
-
+//=> handle the POST request for logging out the user by destroying the session and redirecting them to the login page.
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/login");
 });
-
+//-> update the long URL associated with a given short URL in the urlDatabase object. This function is triggered when a user submits a form to update a URL on the "/urls/:id/update" route.
 app.post("/urls/:id/update", (req, res) => {
   const userId = req.session.user_id;
   const shortURL = req.params.id;
@@ -270,7 +274,7 @@ app.post("/urls/:id/update", (req, res) => {
   url.longURL = updatedLongURL;
   res.redirect("/urls");
 });
-
+//->handle the deletion of a URL from the urlDatabase object, given a specific shortURL ID.
 app.post("/urls/:id/delete", (req, res) => {
   const userId = req.session.user_id;
   const shortURL = req.params.id;
