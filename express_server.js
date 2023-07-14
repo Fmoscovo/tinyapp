@@ -1,8 +1,8 @@
-const express = require("express"); //  Express Framework
-const session = require("cookie-session"); //  Cookie-Session Middleware
-const app = express(); // Instance of Express application
-const bcrypt = require("bcryptjs"); // Bcryptjs Library for encrypting
-const PORT = 8080; // Default port 8080
+const express = require("express");
+const session = require("cookie-session");
+const app = express();
+const bcrypt = require("bcryptjs");
+const PORT = 8080;
 
 ///////////////////////////middleware/////////////////////////////////////
 app.set("view engine", "ejs");
@@ -43,6 +43,16 @@ function generateRandomString() {
   return result;
 }
 
+function getUserByEmail(email, database) {
+  for (const userId in database) {
+    const user = database[userId];
+    if (user.email === email) {
+      return user;
+    }
+  }
+  return null;
+}
+
 function urlsForUser(id) {
   const userUrls = {};
 
@@ -56,16 +66,6 @@ function urlsForUser(id) {
 }
 
 ///////////////////////////////database//////////////////////////////
-const getUserByEmail = function (email) {
-  for (const userId in users) {
-    const user = users[userId];
-    if (user.email === email) {
-      return user;
-    }
-  }
-  return null;
-};
-
 const urlDatabase = {
   b6UTxQ: {
     longURL: "https://www.tsn.ca",
@@ -193,7 +193,7 @@ app.get("/urls/:id", (req, res) => {
 //////////////////////////POST ////////////////////////////////////////////////
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  const user = getUserByEmail(email);
+  const user = getUserByEmail(email, users);
 
   console.log("Entered password:", password);
   console.log("Stored hashed password:", user.hashedPassword);
@@ -223,7 +223,7 @@ app.post("/register", (req, res) => {
     res.status(400).send("Email is required.");
     return;
   }
-  if (getUserByEmail(newUser.email)) {
+  if (getUserByEmail(newUser.email, users)) {
     res.status(400).send("Email is already registered.");
     return;
   }
