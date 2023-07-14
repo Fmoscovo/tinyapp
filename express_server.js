@@ -84,7 +84,13 @@ const users = {
 
 //////////////////////////// GET /////////////////////////////////////////////
 app.get("/", (req, res) => {
-  res.send("Hello! Welcome to the TinyApp! Have Fun!");
+  const userId = req.session.user_id;
+
+  if (userId) {
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.get("/urls", (req, res) => {
