@@ -3,6 +3,11 @@
 ### Objective
 The objective of TinyApp is to create a web application that allows users to shorten URLs and manage them. Users can register, log in, create, edit, and delete their shortened URLs. The application uses cookies to maintain user sessions and bcrypt to hash user passwords.
 
+
+# Final product
+![Screenshot 2023-07-14 000720](https://github.com/Fmoscovo/tinyapp/assets/128196275/5fb57545-bf8f-4e01-904f-fb0f586557c9)
+![Screenshot 2023-07-14 000502](https://github.com/Fmoscovo/tinyapp/assets/128196275/a710ddf0-bfc1-47c7-93e0-1c4f5d5e2025)
+
 ### Inputs
 - Express.js
 - cookie-session
@@ -11,6 +16,21 @@ The objective of TinyApp is to create a web application that allows users to sho
 - URL database
 - User database
 
+# Running TinyApp
+Follow these steps to run TinyApp on your local machine. 
+## Step 1: Clone the Repository
+Clone the TinyApp repository from GitHub by running the following command in your terminal: git clone https://github.com/<repository-url>
+## Step 2: Navigate to the Directory
+Change your current directory to the TinyApp directory: cd TinyApp
+## Step 3: Install Dependencies (Inputs above)
+Install the necessary dependencies by running the following command:npm install
+## Step 4: Set Up the Database
+TinyApp requires a database to store URL data. Set up a database of your choice (e.g., MySQL, PostgreSQL) and update the database connection details.
+## Step 5: Start the Server
+Once the dependencies are installed and the database is set up, start the TinyApp server: npm start
+## Step 6: Access TinyApp in your Browser
+Open your web browser and visit `http://localhost:8080` to access TinyApp. If everything is set up correctly, you should be able to use the application to create and manage short URLs.
+--------------------------------//---------------------------------------
 ### Flow
 - Set up middleware and functions
 - Define routes for GET and POST requests
