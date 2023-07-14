@@ -3,24 +3,41 @@
     <a
       class="navbar-brand"
       href="<% if (user && user.email) { %>/urls<% } else { %>/login<% } %>"
-      >TinyApp</a
+      style="font-size: 1.2rem"
     >
+      TinyApp &#5792;&#5847;
+    </a>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav mr-auto">
         <% if (user && user.email) { %>
-        <a class="nav-item nav-link" href="/urls">My URLs</a>
-        <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+        <a class="nav-item nav-link" href="/urls" style="font-size: 1.2rem"
+          >My URLs
+        </a>
+        <!-- Increased font size -->
+        <a class="nav-item nav-link" href="/urls/new" style="font-size: 1.2rem"
+          >Create New URL
+        </a>
+        <!-- Increased font size -->
         <% } %>
       </div>
       <div class="navbar-nav ml-auto">
         <% if (user && user.email) { %>
-        <span class="nav-item nav-link">Logged In As: <%= user.email %>!</span>
+        <span class="nav-item nav-link" style="font-size: 1.2rem"
+          >Logged In As: <%= user.email %>
+        </span>
+        <!-- Increased font size -->
         <form class="form-inline" action="/logout" method="POST">
           <button type="submit" class="btn btn-secondary">Log Out</button>
         </form>
         <% } else { %>
-        <a class="nav-item nav-link" href="/register">Register</a>
-        <a class="nav-item nav-link" href="/login">Login</a>
+        <a class="nav-item nav-link" href="/register" style="font-size: 1.2rem"
+          >Register</a
+        >
+        <!-- Increased font size -->
+        <a class="nav-item nav-link" href="/login" style="font-size: 1.2rem"
+          >Login</a
+        >
+        <!-- Increased font size -->
         <% } %>
       </div>
     </div>

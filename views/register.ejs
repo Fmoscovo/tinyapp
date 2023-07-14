@@ -11,13 +11,28 @@
       crossorigin="anonymous"
     />
     <title>Registration</title>
+    <style>
+      .container {
+        width: 400px;
+        margin-top: 50px;
+      }
+      h1 {
+        text-align: center;
+      }
+      form {
+        margin-top: 30px;
+      }
+      button[type="submit"] {
+        margin-top: 20px;
+      }
+    </style>
   </head>
   <body>
     <%- include('partials/_header') %>
 
     <div class="container">
-      <h1 class="mt-4">Create Account</h1>
-      <form class="mt-4" action="/register" method="POST">
+      <h1>Create Account</h1>
+      <form action="/register" method="POST">
         <div class="form-group">
           <label for="email">Email:</label>
           <input type="email" class="form-control" name="email" required />

@@ -14,8 +14,6 @@ app.use(
     name: "session",
     keys: ["secret-key"],
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    secure: false, // Set to true for HTTPS only
-    httpOnly: true,
   })
 );
 
