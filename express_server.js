@@ -1,15 +1,25 @@
-const express = require("express");
-const cookieParser = require("cookie-parser");
-const app = express();
-const bcrypt = require("bcryptjs");
-const PORT = 8080;
+const express = require("express"); //  Express Framework
+const session = require("cookie-session"); //  Cookie-Session Middleware
+const app = express(); // Instance of Express application
+const bcrypt = require("bcryptjs"); // Bcryptjs Library for encrypting
+const PORT = 8080; // Default port 8080
+
 ///////////////////////////middleware/////////////////////////////////////
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(
+  session({
+    name: "session",
+    keys: ["secret-key"],
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    secure: false, // Set to true for HTTPS only
+    httpOnly: true,
+  })
+);
+
 //////////////////////////////////////functions/////////////////////
 const requiredLogin = function (req, res, next) {
-  const userId = req.cookies.user_id;
+  const userId = req.session.user_id;
 
   if (!userId || !users[userId]) {
     res.redirect("/login");
@@ -32,6 +42,7 @@ function generateRandomString() {
 
   return result;
 }
+
 function urlsForUser(id) {
   const userUrls = {};
 
@@ -78,13 +89,14 @@ const users = {
     password: "test2",
   },
 };
+
 //////////////////////////// GET /////////////////////////////////////////////
 app.get("/", (req, res) => {
   res.send("Hello! Welcome to the TinyApp! Have Fun!");
 });
 
 app.get("/urls", (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.session.user_id;
 
   if (!userId) {
     res.status(401).send("You must be logged in to view this page.");
@@ -106,7 +118,7 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  const user = users[req.cookies.user_id];
+  const user = users[req.session.user_id];
 
   if (user) {
     res.redirect("/urls");
@@ -121,7 +133,7 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  const user = users[req.cookies.user_id];
+  const user = users[req.session.user_id];
 
   if (user) {
     res.redirect("/urls");
@@ -137,7 +149,7 @@ app.get("/register", (req, res) => {
 
 app.get("/urls/new", requiredLogin, (req, res) => {
   const templateVars = {
-    user: users[req.cookies.user_id],
+    user: users[req.session.user_id],
   };
 
   res.render("urls_new", templateVars);
@@ -155,7 +167,7 @@ app.get("/u/:id", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.session.user_id;
   const shortURL = req.params.id;
   const url = urlDatabase[shortURL];
 
@@ -177,18 +189,8 @@ app.get("/urls/:id", (req, res) => {
 
   res.render("urls_show", templateVars);
 });
-//////////////////////////POST ////////////////////////////////////////////////
-// app.post("/login", (req, res) => {
-//   const { email, password } = req.body;
-//   const user = getUserByEmail(email);
 
-//   if (user && user.password === password) {
-//     res.cookie("user_id", user.id);
-//     res.redirect("/urls");
-//   } else {
-//     res.status(403).send("Login failed. Please try again.");
-//   }
-// });
+//////////////////////////POST ////////////////////////////////////////////////
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   const user = getUserByEmail(email);
@@ -201,7 +203,7 @@ app.post("/login", (req, res) => {
     user.hashedPassword &&
     bcrypt.compareSync(password, user.hashedPassword)
   ) {
-    res.cookie("user_id", user.id);
+    req.session.user_id = user.id;
     res.redirect("/urls");
   } else {
     res.status(403).send("Login failed. Please try again.");
@@ -230,12 +232,12 @@ app.post("/register", (req, res) => {
     email: newUser.email,
     hashedPassword: hashedPassword, // Use 'hashedPassword' instead of 'password'
   };
-  res.cookie("user_id", newUserId);
+  req.session.user_id = newUserId;
   res.redirect("/urls");
 });
 
 app.post("/urls", requiredLogin, (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.session.user_id;
 
   if (!userId || !users[userId]) {
     res.status(401).send("You must be logged in to create a short URL.");
@@ -249,12 +251,12 @@ app.post("/urls", requiredLogin, (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  req.session = null;
   res.redirect("/login");
 });
 
 app.post("/urls/:id/update", (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.session.user_id;
   const shortURL = req.params.id;
   const updatedLongURL = req.body.updatedLongURL;
   const url = urlDatabase[shortURL];
@@ -274,7 +276,7 @@ app.post("/urls/:id/update", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.session.user_id;
   const shortURL = req.params.id;
   const url = urlDatabase[shortURL];
 
@@ -291,6 +293,7 @@ app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[shortURL];
   res.redirect("/urls");
 });
+
 ///////////////////////////////////////// LISTEN //////////////////////////////
 app.listen(PORT, () => {
   console.log(`TinyApp is working on port ${PORT}!`);
